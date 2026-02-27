@@ -1,5 +1,8 @@
 import processing.video.*;
 import themidibus.*;
+import javax.sound.midi.MidiMessage; //Import the MidiMessage classes http://java.sun.com/j2se/1.5.0/docs/api/javax/sound/midi/MidiMessage.html
+import javax.sound.midi.SysexMessage;
+import javax.sound.midi.ShortMessage;
 
 MidiBus myBus; // The MidiBus
 MidiReceiver receiver = new MidiReceiver();
@@ -10,6 +13,7 @@ float ellapsed;
 float startTime;
 float endTime;
 boolean playing = false;
+boolean noteSent = false;
 
 void setup(){
   //fullScreen(2);
@@ -17,7 +21,7 @@ void setup(){
   background(0);
   video = new Movie(this, "SC1TK2.mov");
   MidiBus.list(); // List all available Midi devices on STDOUT. This will show each device's index and name.
-  myBus = new MidiBus(receiver, "TinyUSB MIDI", -1); // Create a new MidiBus with no input device and the default Java Sound Synthesizer as the output device.
+  myBus = new MidiBus(receiver, "TinyUSB MIDI", "TinyUSB MIDI"); // Create a new MidiBus with no input device and the default Java Sound Synthesizer as the output device.
   startTime = millis();
   endTime = startTime + duration;
 }
@@ -36,7 +40,17 @@ void draw(){
     playing = false;
   }else{
     playing = true;
+    noteSent = false;
   }
+  
+  //if(!noteSent && !playing){
+  //  myBus.sendNoteOn(1, 64, 127);
+  //  noteSent = true;
+  //}
+  
+  //if(noteSent && playing){
+  //  noteSent = false;
+  //}
   println("millis: "+millis());
   println("duration "+duration*1000);
   println("start "+startTime);

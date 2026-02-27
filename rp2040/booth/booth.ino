@@ -29,6 +29,12 @@
 Adafruit_USBD_MIDI usb_midi;
 
 bool noteSent = false;
+bool light = true;
+float duration = 208000;
+// float duration = 30000;
+float startTime = 0;
+bool firstRun = true; //needed to make the light start on
+
 // Create a new instance of the Arduino MIDI Library,
 // and attach usb_midi as the transport.
 MIDI_CREATE_INSTANCE(Adafruit_USBD_MIDI, usb_midi, MIDI);
@@ -49,14 +55,13 @@ void setup() {
   // Initialize MIDI, and listen to all MIDI channels
   // This will also call usb_midi's begin()
   MIDI.begin(MIDI_CHANNEL_OMNI);
-
+  MIDI.setHandleNoteOn(handleNoteOn);
   // If already enumerated, additional class driverr begin() e.g msc, hid, midi won't take effect until re-enumeration
   if (TinyUSBDevice.mounted()) {
     TinyUSBDevice.detach();
     delay(10);
     TinyUSBDevice.attach();
   }
-
 }
 
 void loop() {
@@ -74,18 +79,37 @@ void loop() {
   if(buttonPressed && !noteSent){
     Serial.println(buttonPressed);
     MIDI.sendNoteOn(64, 127, 1);    // Send a Note (pitch 42, velo 127 on channel 1)
-    digitalWrite(10, LOW);
     noteSent = true;
+    light = false;
+    firstRun = false;
+    startTime = millis();
   }
 
   if(!buttonPressed && noteSent){
     Serial.println(buttonPressed);
     MIDI.sendNoteOff(64, 0, 1);     // Stop the note
-    digitalWrite(10, HIGH);
     noteSent = false;
+  }
+
+  if(millis() > (startTime +duration) || firstRun) {
+    light = true;
+  }else{
+    light = false;
+  } 
+  
+  if(light){
+    digitalWrite(10, HIGH);
+  }else{
+    digitalWrite(10, LOW);
   }
   
   delay(10);
+}
+
+void handleNoteOn(byte channel, byte pitch, byte velocity) {
+  if(!light){
+    light = true;
+  }
 }
 
 
