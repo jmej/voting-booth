@@ -92,7 +92,7 @@ void movieEvent(Movie m) {
 
 void draw(){
   noCursor();
-  //sample.amp(0); //loop silently - this is just for visuals
+  flash.amp(0.2);
   background(0);
   //if (movie.available() == true) {
   //  movie.read(); 
@@ -107,7 +107,7 @@ void draw(){
   }
   
   //fakeaudio scan between 1:22 and 1:30 (8200 amd 90000)
-  if(millis() > startTime + 82000 && millis() < startTime + 87000){
+  if(millis() > startTime + 82000 && millis() < startTime + 88000){
     spying = 1;
   }else{
     spying = 0;
