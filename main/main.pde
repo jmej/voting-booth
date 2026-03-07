@@ -10,6 +10,8 @@ import javax.sound.midi.SysexMessage;
 import javax.sound.midi.ShortMessage;
 import processing.sound.*;
 
+float oscTime = 0;
+
 SoundFile flash;
 boolean playFlash = false;
 boolean flashPlaying = false;
@@ -64,8 +66,12 @@ int fontX;
 int fontY;
 
 void setup(){
-  fullScreen(P2D, 2);
+ fullScreen(P3D);
   //size(800, 800);
+  background(0);
+  video = new Movie(this, "inside_video_all_v8_upres_90° (1080p).mp4");
+  MidiBus.list(); // List all available Midi devices on STDOUT. This will show each device's index and name.
+  myBus = new MidiBus(receiver, "Pico", "Pico"); // Create a new MidiBus with no input device and the default Java Sound Synthesizer as the output device.
   flash = new SoundFile(this, "353044__montclairguy__camera-shutter-and-flash-combined.wav");
   fontX = width/8;
   fontY = height - height/8;
@@ -75,9 +81,6 @@ void setup(){
   textSize(6);
   textFont(mono);
   fill(0, 255, 0); //green color for text
-  video = new Movie(this, "insideVideo_all_v8_upres_90.mov");
-  MidiBus.list(); // List all available Midi devices on STDOUT. This will show each device's index and name.
-  myBus = new MidiBus(receiver, "TinyUSB MIDI", "TinyUSB MIDI"); // Create a new MidiBus with no input device and the default Java Sound Synthesizer as the output device.
   startTime = millis();
   endTime = startTime + duration;
 }
@@ -88,10 +91,12 @@ void movieEvent(Movie m) {
 
 
 void draw(){
+  noCursor();
+  //sample.amp(0); //loop silently - this is just for visuals
+  background(0);
   //if (movie.available() == true) {
   //  movie.read(); 
   //}
-  background(0);
   image(video, 0, 0, width, height);
   if(millis() > endTime){
     playing = false;
@@ -100,21 +105,30 @@ void draw(){
     noteSent = false;
   }
   
+  //fakeaudio scan between 1:22 and 1:30 (8200 amd 90000)
+  if(millis() > startTime + 82000 && millis() < startTime + 90000){
+    spying = 1;
+  }else{
+    spying = 0;
+  }
+  
+  
   switch(spying){
     case 0:
       //draw nothing
       break;
-    case 1: 
+    case 1:
       pushMatrix();
-      translate(fontX, fontY - 50);
-      fakeAudio();
+      rotate(HALF_PI); //rotate 90 degrees
+      translate(width/12, -height/4); 
+      fakeAudio(0, 0, width/2, height/6 );
+      textSize(20);
+      text("analyzing audio: "+random(-1, 1),0,0);
       popMatrix();
-      textSize(12);
-      text("analyzing audio: "+random(-1, 1), fontX, fontY);
       break;
     case 2:
       spying = 2;
-      textSize(12);
+      textSize(20);
       text("visual analysis: "+words[int(random(100))], fontX, fontY);
       break;
   }
@@ -122,72 +136,55 @@ void draw(){
     flash.play();
     flashPlaying = true;
   }
-  //println("spying: "+spying);
-  
-  //if(!noteSent && !playing){
-  //  myBus.sendNoteOn(1, 64, 127);
-  //  noteSent = true;
-  //}
-  
-  //if(noteSent && playing){
-  //  noteSent = false;
-  //}
-  //println("millis: "+millis());
-  //println("duration "+duration*1000);
-  //println("start "+startTime);
-  //println("end "+endTime);
-  //println("playing: "+playing);
+
   
 }
 
 
-void fakeAudio() {
+void fakeAudio(float x, float y, float w, float h) {
+  strokeWeight(2);
+  noFill();
 
-  float widthMult = 0.5;
-  float heightMult = 0.02;
+  float topY = y + h * 0.35;
+  float bottomY = y + h * 0.65;
 
-  //breath pauses
-  if (!isPausing && random(1) < 0.002) {
-    isPausing = true;
-    pauseTimer = random(20, 60);
+  // --- TOP WAVE ---
+  stroke(0, 255, 0);
+  beginShape();
+  for (int i = 0; i < w; i++) {
+
+    float burst = noise(oscTime * 3) * 1.8;
+    float n = noise(i * 0.015, oscTime * 4);
+
+    float yy =
+      topY +
+      sin(i * 0.035 + oscTime * 6) * (h * 0.12) * burst +
+      sin(i * 0.08 - oscTime * 8) * (h * 0.05) * burst +
+      map(n, 0, 1, -h * 0.12, h * 0.12) * burst;
+
+    vertex(x + i, yy);
   }
+  endShape();
 
-  if (isPausing) {
-    pauseTimer--;
-    if (pauseTimer <= 0) {
-      isPausing = false;
-    }
+  // --- BOTTOM WAVE ---
+  stroke(0, 255, 0);
+  beginShape();
+  for (int i = 0; i < w; i++) {
+
+    float burst = noise(oscTime * 3 + 50) * 1.8;
+    float n = noise(i * 0.015, oscTime * 5 + 200);
+
+    float yy =
+      bottomY +
+      sin(i * 0.038 + oscTime * 6.5) * (h * 0.12) * burst +
+      sin(i * 0.085 - oscTime * 8.5) * (h * 0.05) * burst +
+      map(n, 0, 1, -h * 0.12, h * 0.12) * burst;
+
+    vertex(x + i, yy);
   }
-  float targetEnvelope = map(noise(ampTime), 0, 1, 0.2, 1.3);
+  endShape();
 
-  // Smooth attack / decay
-  currentEnvelope = lerp(currentEnvelope, targetEnvelope, 0.08);
-
-  if (isPausing) {
-    currentEnvelope *= 0.1;
-  }
-
-  // consonants
-  float burst = 0;
-  if (random(1) < 0.4) {
-    burst = random(0.5, 1.2);
-  }
-
-  float finalAmp = currentEnvelope + burst;
-
-  //waveform
-  for (int x = 0; x < width * widthMult; x += 2) {
-    float phase = map(x, 0, width * widthMult, 0, 4 * PI);
-    float sineWave = sin(phase - time) * (height * heightMult);
-    float texture = (noise(x * 0.05, time) - 0.5) * (height * heightMult);
-    float y = (sineWave + texture) * finalAmp;
-    float asym = noise(x * 0.02, time * 0.5) * 10;
-    stroke(0,255,0);
-    line(x, -abs(y) - asym, x, abs(y));
-  }
-
-  time += 0.8;    // fast vibration
-  ampTime += 10; // slow syllable pacing
+  oscTime += 0.09;
 }
 
 void keyPressed(){
@@ -202,9 +199,14 @@ void keyPressed(){
       spying = 2;
       break;
   }
-  
-  video.jump(0);
-  video.play();
+  if(!playing){
+    video.jump(0);
+    video.play();
+    startTime = millis();
+    endTime = startTime + duration;
+    flashPlaying = true;
+    playFlash = false;
+  }
 }
 
 public class MidiReceiver{
