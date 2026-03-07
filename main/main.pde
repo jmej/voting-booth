@@ -72,7 +72,7 @@ void setup(){
   video = new Movie(this, "inside_video_all_v8_upres_90° (1080p).mp4");
   MidiBus.list(); // List all available Midi devices on STDOUT. This will show each device's index and name.
   myBus = new MidiBus(receiver, "Pico", "Pico"); // Create a new MidiBus with no input device and the default Java Sound Synthesizer as the output device.
-  flash = new SoundFile(this, "353044__montclairguy__camera-shutter-and-flash-combined.wav");
+  flash = new SoundFile(this, "flash.wav");
   fontX = width/8;
   fontY = height - height/8;
   background(0);
@@ -97,16 +97,17 @@ void draw(){
   //if (movie.available() == true) {
   //  movie.read(); 
   //}
-  image(video, 0, 0, width, height);
+  
   if(millis() > endTime){
     playing = false;
   }else{
+    image(video, 0, 0, width, height);
     playing = true;
     noteSent = false;
   }
   
   //fakeaudio scan between 1:22 and 1:30 (8200 amd 90000)
-  if(millis() > startTime + 82000 && millis() < startTime + 90000){
+  if(millis() > startTime + 82000 && millis() < startTime + 87000){
     spying = 1;
   }else{
     spying = 0;
