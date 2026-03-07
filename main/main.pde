@@ -1,8 +1,18 @@
+
+//Code by Jesse Mejia 2026 for Katherine Longstreth
+//Camera shutter and flash combined by montclairguy -- https://freesound.org/s/353044/ -- License: Creative Commons 0
+
+
 import processing.video.*;
 import themidibus.*;
 import javax.sound.midi.MidiMessage; //Import the MidiMessage classes http://java.sun.com/j2se/1.5.0/docs/api/javax/sound/midi/MidiMessage.html
 import javax.sound.midi.SysexMessage;
 import javax.sound.midi.ShortMessage;
+import processing.sound.*;
+
+SoundFile flash;
+boolean playFlash = false;
+boolean flashPlaying = false;
 
 MidiBus myBus; // The MidiBus
 MidiReceiver receiver = new MidiReceiver();
@@ -54,8 +64,9 @@ int fontX;
 int fontY;
 
 void setup(){
-  //fullScreen(2);
-  size(800, 800);
+  fullScreen(P2D, 2);
+  //size(800, 800);
+  flash = new SoundFile(this, "353044__montclairguy__camera-shutter-and-flash-combined.wav");
   fontX = width/8;
   fontY = height - height/8;
   background(0);
@@ -64,7 +75,7 @@ void setup(){
   textSize(6);
   textFont(mono);
   fill(0, 255, 0); //green color for text
-  video = new Movie(this, "monkchurch4.mp4");
+  video = new Movie(this, "insideVideo_all_v8_upres_90.mov");
   MidiBus.list(); // List all available Midi devices on STDOUT. This will show each device's index and name.
   myBus = new MidiBus(receiver, "TinyUSB MIDI", "TinyUSB MIDI"); // Create a new MidiBus with no input device and the default Java Sound Synthesizer as the output device.
   startTime = millis();
@@ -80,6 +91,7 @@ void draw(){
   //if (movie.available() == true) {
   //  movie.read(); 
   //}
+  background(0);
   image(video, 0, 0, width, height);
   if(millis() > endTime){
     playing = false;
@@ -106,7 +118,11 @@ void draw(){
       text("visual analysis: "+words[int(random(100))], fontX, fontY);
       break;
   }
-  println("spying: "+spying);
+  if(playFlash && !flashPlaying){
+    flash.play();
+    flashPlaying = true;
+  }
+  //println("spying: "+spying);
   
   //if(!noteSent && !playing){
   //  myBus.sendNoteOn(1, 64, 127);
@@ -200,13 +216,18 @@ public class MidiReceiver{
     println("Channel:"+channel);
     println("Pitch:"+pitch);
     println("Velocity:"+velocity);
-    if(!playing){
+    if(!playing && pitch == 64){
       video.jump(0);
       video.play();
       duration = video.duration()*1000;
       startTime = millis();
       endTime = startTime + duration;
       playing = true;
+      flashPlaying = false;
+      playFlash = false;
+    }
+    if(pitch == 65){
+      playFlash = true;
     }
   }
 

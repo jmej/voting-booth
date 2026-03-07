@@ -2,7 +2,7 @@
  requires https://github.com/earlephilhower/arduino-pico (LGPL)
  
  
- button code for katherine
+ button and flash code for katherine longstreth's piece , Portland Biennial 2026
 
  jesse mejia 2026
 
@@ -25,6 +25,17 @@
 #include <Arduino.h>
 #include <Adafruit_TinyUSB.h>
 #include <MIDI.h>
+#include <FastLED.h>
+
+#define NUM_LEDS 1
+#define DATA_PIN 20
+
+// Define the array of leds
+CRGB leds[NUM_LEDS];
+
+uint32_t flashedAt = 0; //timestamp for last flash
+bool flash = false;
+bool flashed = false;
 
 Adafruit_USBD_MIDI usb_midi;
 
@@ -62,9 +73,30 @@ void setup() {
     delay(10);
     TinyUSBDevice.attach();
   }
+    FastLED.addLeds<WS2812, DATA_PIN, GRB>(leds, NUM_LEDS).setRgbw(RgbwDefault());
+    FastLED.setBrightness(255);  // Set global brightness to 100%
+    delay(2000);  // If something ever goes wrong this delay will allow upload.
 }
 
 void loop() {
+
+  if(!flash && (millis() > startTime + 73000) && !flashed){ //73000
+    flash = true;
+    flashed = true;
+    flashedAt = millis();
+    MIDI.sendNoteOn(65, 127, 1);    // Send a Note (pitch 65, velo 127 on channel 1)
+  }
+
+    //turn light off 80ms after on
+  if(flash && millis() > (flashedAt + 80)){
+    leds[0] = CHSV(65, 0, 0);
+    flash = false;
+  }
+
+  if(flash){
+    leds[0] = CHSV(65, 5, 255);
+  }
+
   #ifdef TINYUSB_NEED_POLLING_TASK
   // Manual call tud_task since it isn't called by Core's background
   TinyUSBDevice.task();
@@ -76,6 +108,7 @@ void loop() {
   }
 
   bool buttonPressed = digitalRead(13);
+
   if(buttonPressed && !noteSent){
     Serial.println(buttonPressed);
     MIDI.sendNoteOn(64, 127, 1);    // Send a Note (pitch 42, velo 127 on channel 1)
@@ -83,16 +116,18 @@ void loop() {
     light = false;
     firstRun = false;
     startTime = millis();
+    flashed = false;
   }
 
-  if(!buttonPressed && noteSent){
-    Serial.println(buttonPressed);
-    MIDI.sendNoteOff(64, 0, 1);     // Stop the note
-    noteSent = false;
-  }
+  // if(!buttonPressed && noteSent){
+  //   Serial.println(buttonPressed);
+  //   MIDI.sendNoteOff(64, 0, 1);     // Stop the note
+  //   noteSent = false;
+  // }
 
-  if(millis() > (startTime +duration) || firstRun) {
+  if(millis() > (startTime + duration) || firstRun) {
     light = true;
+    noteSent = false;
   }else{
     light = false;
   } 
@@ -102,7 +137,7 @@ void loop() {
   }else{
     digitalWrite(10, LOW);
   }
-  
+  FastLED.show();
   delay(10);
 }
 
