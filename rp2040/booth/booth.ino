@@ -41,7 +41,7 @@ Adafruit_USBD_MIDI usb_midi;
 
 bool noteSent = false;
 bool light = true;
-float duration = 208000;
+float duration = 180000;
 // float duration = 30000;
 float startTime = 0;
 bool firstRun = true; //needed to make the light start on
@@ -80,7 +80,7 @@ void setup() {
 
 void loop() {
 
-  if(!flash && (millis() > startTime + 73000) && !flashed){ //73000
+  if(!flash && (millis() > startTime + 15000) && !flashed){ 
     flash = true;
     flashed = true;
     flashedAt = millis();

@@ -64,12 +64,14 @@ boolean noteSent = false;
 
 int fontX;
 int fontY;
-
+int b;
 void setup(){
  fullScreen(P3D);
+ b = b+1;
+ b = b % 5;
   //size(800, 800);
   background(0);
-  video = new Movie(this, "inside_video_all_v8_upres_90° (1080p).mp4");
+  video = new Movie(this, "final_inside_video_all_v13c_upres_90° (1080p).mp4");
   MidiBus.list(); // List all available Midi devices on STDOUT. This will show each device's index and name.
   myBus = new MidiBus(receiver, "Pico", "Pico"); // Create a new MidiBus with no input device and the default Java Sound Synthesizer as the output device.
   flash = new SoundFile(this, "flash.wav");
@@ -105,12 +107,15 @@ void draw(){
     playing = true;
     noteSent = false;
   }
-  
-  //fakeaudio scan between 1:22 and 1:30 (8200 amd 90000)
-  if(millis() > startTime + 82000 && millis() < startTime + 88000){
+  spying = 0;
+  //fakeaudio scan 
+  if(millis() > startTime + 56000 && millis() < startTime + 64000){
     spying = 1;
-  }else{
-    spying = 0;
+  }
+  
+  //fakevisual scan 
+  if(millis() > startTime + 140000 && millis() < startTime + 166000){
+    spying = 2;
   }
   
   
@@ -128,9 +133,13 @@ void draw(){
       popMatrix();
       break;
     case 2:
+      pushMatrix();
+      rotate(HALF_PI); //rotate 90 degrees
+      translate(width/12, -height/4); 
       spying = 2;
       textSize(20);
-      text("visual analysis: "+words[int(random(100))], fontX, fontY);
+      text("visual analysis: "+words[int(random(100))], 0, 0);
+      popMatrix();
       break;
   }
   if(playFlash && !flashPlaying){
