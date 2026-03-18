@@ -114,7 +114,7 @@ void draw(){
   }
   
   //fakevisual scan 
-  if(millis() > startTime + 140000 && millis() < startTime + 166000){
+  if(millis() > startTime + 165000 && millis() < startTime + 168000){
     spying = 2;
   }
   
