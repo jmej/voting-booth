@@ -133,6 +133,7 @@ void draw(){
       popMatrix();
       break;
     case 2:
+      pushMatrix();
       translate(labanX + labanWidth / 2, labanY + labanHeight / 2);
       rotate(HALF_PI); // 45 degrees clockwise
       translate(-(labanX + labanWidth / 2), -(labanY + labanHeight / 2));
@@ -143,7 +144,6 @@ void draw(){
       waveOffset1 += 0.34;
       waveOffset2 += 0.33;
       waveOffset3 += 0.35;
-}
       spying = 2;
 
       break;
