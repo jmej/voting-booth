@@ -12,6 +12,12 @@ import processing.sound.*;
 
 float oscTime = 0;
 
+float labanX, labanY, labanWidth, labanHeight;
+
+float waveOffset1 = 0;
+float waveOffset2 = 0;
+float waveOffset3 = 0;
+
 SoundFile flash;
 boolean playFlash = false;
 boolean flashPlaying = false;
@@ -31,27 +37,15 @@ int spying = 0; //0 nothing, 1 audio scan, 2 visual scan
   float pauseTimer = 0;
 
 
-static String[] words = {
-    "vibrant", "melancholic", "radiant", "mysterious", "serene",
-    "boisterous", "fragile", "resilient", "ancient", "modern",
-    "gleaming", "shadowy", "luminous", "whimsical", "graceful",
-    "rugged", "sleek", "brilliant", "dull", "majestic",
-    "nimble", "clumsy", "elegant", "fierce", "gentle",
-    "stormy", "tranquil", "curious", "fearless", "timid",
-    "bold", "cautious", "lavish", "meager", "ornate",
-    "plain", "charming", "awkward", "loyal", "fickle",
-    "dusky", "crisp", "murky", "pristine", "tattered",
-    "shimmering", "vast", "compact", "soaring", "sunken",
-    "fragrant", "pungent", "savory", "bitter", "sweet",
-    "icy", "scorching", "velvety", "rough", "spacious",
-    "cramped", "jubilant", "somber", "zealous", "apathetic",
-    "intricate", "simple", "dynamic", "static", "harmonious",
-    "discordant", "playful", "stern", "vivid", "faded",
-    "robust", "delicate", "hearty", "hollow", "glorious",
-    "dreary", "sparkling", "fluffy", "dense", "swift",
-    "sluggish", "polished", "gritty", "quaint", "modernistic",
-    "colorful", "monochrome", "ethereal", "radiant", "enigmatic",
-    "brisk", "dreary", "opulent", "subtle", "tenacious"
+String[] words = {
+  "Weight", "Time", "Space", "Flow",
+  "Bound", "Free", "Strong", "Light", "Direct", "Indirect", "Sustained", "Quick",
+  "Sensing", "Feeling", "Intending", "Progressing", "Thinking", "Intuiting", "Attending", "Deciding",
+  "Sensing & Feeling", "Intending & Progressing", "Thinking & Intuiting", "Attending & Deciding",
+  "Sensing & Intuiting", "Intending & Deciding", "Feeling & Thinking", "Progressing & Attending",
+  "Sensing & Thinking", "Intending & Attending", "Feeling & Thinking", "Progressing & Deciding",
+  "Dream State", "Awake State", "Rhythm State", "Remote State", "Mobile State", "Stable State",
+  "Passion Drive", "Spell Drive", "Vision Drive", "Active Drive"
 };
 
 Movie video;
@@ -71,6 +65,10 @@ void setup(){
  b = b % 5;
   //size(800, 800);
   background(0);
+  labanX = 100;
+  labanY = 80;
+  labanWidth = 500;
+  labanHeight = 440;
   video = new Movie(this, "final_inside_video_all_v13c_upres_90° (1080p).mp4");
   MidiBus.list(); // List all available Midi devices on STDOUT. This will show each device's index and name.
   myBus = new MidiBus(receiver, "Pico", "Pico"); // Create a new MidiBus with no input device and the default Java Sound Synthesizer as the output device.
