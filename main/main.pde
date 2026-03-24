@@ -111,7 +111,7 @@ void draw(){
   }
   
   //fakevisual scan 
-  if(millis() > startTime + 165000 && millis() < startTime + 168000){
+  if(millis() > startTime + 165000 && millis() < startTime + 169000){
     spying = 2;
   }
   
@@ -336,7 +336,7 @@ void drawLabanDiagram(float x, float y, float w, float h) {
   if (frameCount % int(random(30, 60)) == 0 ) { 
     wordIndex = int(random(words.length));
   }
-  text(words[wordIndex], x+25, y);
+  text(words[wordIndex], x+5, y);
   float cx = x + w / 2;
   float cy = y + h / 2;
 
