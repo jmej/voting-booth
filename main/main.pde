@@ -124,7 +124,7 @@ void draw(){
       pushMatrix();
       rotate(HALF_PI); //rotate 90 degrees
       translate(width/12, -height/4); 
-      fakeAudio(0, 0, width*2, height/4 );
+      fakeAudio(0, 0, height/2, height/4 );
       textSize(20);
       text("analyzing audio: "+random(-1, 1),0,0);
       popMatrix();
@@ -155,7 +155,7 @@ void draw(){
 
 
 void fakeAudio(float x, float y, float w, float h) {
-  clip(x, y, w, h);
+  //clip(x, y, w, h);
   
   strokeWeight(2);
   noFill();
@@ -192,7 +192,7 @@ void fakeAudio(float x, float y, float w, float h) {
   }
   endShape();
 
-  noClip();
+ // noClip();
   oscTime += 0.09;
 }
 
