@@ -9,14 +9,10 @@ float waveOffset3 = 0;
 int wordIndex = 0;
 
 String[] words = {
-  "Weight", "Time", "Space", "Flow",
-  "Bound", "Free", "Strong", "Light", "Direct", "Indirect", "Sustained", "Quick",
-  "Sensing", "Feeling", "Intending", "Progressing", "Thinking", "Intuiting", "Attending", "Deciding",
+ // "Bound", "Free", "Strong", "Light", "Direct", "Indirect", "Sustained", "Quick",
   "Sensing & Feeling", "Intending & Progressing", "Thinking & Intuiting", "Attending & Deciding",
   "Sensing & Intuiting", "Intending & Deciding", "Feeling & Thinking", "Progressing & Attending",
-  "Sensing & Thinking", "Intending & Attending", "Feeling & Thinking", "Progressing & Deciding",
-  "Dream State", "Awake State", "Rhythm State", "Remote State", "Mobile State", "Stable State",
-  "Passion Drive", "Spell Drive", "Vision Drive", "Active Drive"
+  "Sensing & Thinking", "Intending & Attending"
 };
 
 void setup() {
@@ -108,7 +104,7 @@ void drawWaves() {
 
 void drawLabanDiagram(float x, float y, float w, float h) {
   textSize(25);
-  if (frameCount % 3 == 0 || frameCount % 47 == 0) {
+  if (frameCount % int(random(30, 60)) == 0 ) { //(frameCount % 3 == 0 || frameCount % 47 == 0)
     wordIndex = int(random(words.length));
   }
   text(words[wordIndex], x+25, y);
