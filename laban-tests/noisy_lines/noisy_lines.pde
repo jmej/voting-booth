@@ -20,17 +20,23 @@ String[] words = {
 };
 
 void setup() {
-  size(700, 600);
-  labanX = 100;
-  labanY = 80;
-  labanWidth = 500;
-  labanHeight = 440;
+  size(2000, 2000);
+  labanX = 0;
+  labanY = 200;
+  labanWidth = 400;
+  labanHeight = 400;
 }
 
 void draw() {
   background(0);
+  pushMatrix();
+  translate(labanX + labanWidth / 2, labanY + labanHeight / 2);
+  rotate(HALF_PI); // 45 degrees clockwise
+  translate(-(labanX + labanWidth / 2), -(labanY + labanHeight / 2));
   drawLabanDiagram(labanX, labanY, labanWidth, labanHeight);
   drawWaves();
+  popMatrix();
+  
   waveOffset1 += 0.34;
   waveOffset2 += 0.33;
   waveOffset3 += 0.35;
