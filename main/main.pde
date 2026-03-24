@@ -124,7 +124,7 @@ void draw(){
       pushMatrix();
       rotate(HALF_PI); //rotate 90 degrees
       translate(width/12, -height/4); 
-      fakeAudio(0, 0, width/2, height/6 );
+      fakeAudio(0, 0, width/4, height/6 );
       textSize(20);
       text("analyzing audio: "+random(-1, 1),0,0);
       popMatrix();
@@ -155,9 +155,10 @@ void draw(){
 
 
 void fakeAudio(float x, float y, float w, float h) {
+  clip(x, y, w, h);
+  
   strokeWeight(2);
   noFill();
-
   float topY = y + h * 0.35;
   float bottomY = y + h * 0.65;
 
@@ -165,16 +166,13 @@ void fakeAudio(float x, float y, float w, float h) {
   stroke(0, 255, 0);
   beginShape();
   for (int i = 0; i < w; i++) {
-
     float burst = noise(oscTime * 3) * 1.8;
     float n = noise(i * 0.015, oscTime * 4);
-
     float yy =
       topY +
       sin(i * 0.035 + oscTime * 6) * (h * 0.12) * burst +
       sin(i * 0.08 - oscTime * 8) * (h * 0.05) * burst +
       map(n, 0, 1, -h * 0.12, h * 0.12) * burst;
-
     vertex(x + i, yy);
   }
   endShape();
@@ -183,20 +181,18 @@ void fakeAudio(float x, float y, float w, float h) {
   stroke(0, 255, 0);
   beginShape();
   for (int i = 0; i < w; i++) {
-
     float burst = noise(oscTime * 3 + 50) * 1.8;
     float n = noise(i * 0.015, oscTime * 5 + 200);
-
     float yy =
       bottomY +
       sin(i * 0.038 + oscTime * 6.5) * (h * 0.12) * burst +
       sin(i * 0.085 - oscTime * 8.5) * (h * 0.05) * burst +
       map(n, 0, 1, -h * 0.12, h * 0.12) * burst;
-
     vertex(x + i, yy);
   }
   endShape();
 
+  noClip();
   oscTime += 0.09;
 }
 
